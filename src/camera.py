@@ -5,17 +5,14 @@ class Camera:
         self.camera = cv2.VideoCapture(camera_id)
         self.camera.set(cv2.CAP_PROP_FRAME_WIDTH, width)
         self.camera.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
-        self.camera.set(cv2.CAP_PROP_FPS, 10)
 
     # Provides a constant stream of frames from the camera as iterable
-    # Should be used with a while loop and next() function
-    # check if the frame was captured successfully with the ret value
+    # returns None if the camera is not able to capture a frame to provide more flexibility with handling camera errors
     def capture(self):
         while True:
             ret, frame = self.camera.read()
             if not ret:
-                yield None
-                break
+                return None
 
             yield frame
 

@@ -1,3 +1,5 @@
+# Contains utility functions for image processing.
+
 import cv2
 
 # Convert image to Grayscale
