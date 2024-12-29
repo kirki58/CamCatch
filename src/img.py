@@ -1,6 +1,7 @@
 # Contains utility functions for image processing.
 
 import cv2
+import numpy as np
 
 # Convert image to Grayscale
 # Explanation: A BGR image is received, each channel is given a weight (B = 0.114, G = 0.587, R = 0.299)
@@ -21,3 +22,43 @@ def from_bgr_to_inverted_binary(image, threshold=127):
 def from_gray_to_inverted_binary(gray, threshold=127):
     _, binary = cv2.threshold(gray, threshold, 255, cv2.THRESH_BINARY_INV)
     return binary
+
+# Iterate over each pixel in the inv_bin image if any neighboring pixel in kernel is 0, set the pixel to 0 
+def apply_erosion(inv_bin, kernel_size = 3, iterations = 1):
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_size, kernel_size))
+    return cv2.erode(inv_bin, kernel, iterations=iterations)
+
+# Description: We find contours in the binary image, then filter out the contours that are too small (noise)
+def apply_contour_filtering(inv_bin, min_area = 100):
+    # RETR_EXTERNAL retrieves only the extreme outer contours
+    # CHAIN_APPROX_SIMPLE removes redundant points of the contour line, saves memory
+    contours, _ = cv2.findContours(inv_bin, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    # Filter out contours that are too small
+    output_image = np.zeros_like(inv_bin) # Create a black image with the same size as the input image
+
+    for contour in contours:
+        if(cv2.contourArea(contour) > min_area):
+            # -1 = Draw all contours, 255 = White color, -1 = Fill the contour
+            cv2.drawContours(output_image, [contour], -1, 255, -1) # Draw valid contours back to the output image, fill the contour with white
+        
+    return output_image
+
+def center_of_mass(inv_bin, draw=False):
+    # returns m00, m10, m01
+    # m00 = sum of all pixel values
+    # m10 = sum of all pixel values multiplied by their x coordinate
+    # m01 = sum of all pixel values multiplied by their y coordinate
+    moments = cv2.moments(inv_bin)
+
+    # Calculate the center of mass
+    if(moments["m00"] != 0):
+        cx = int(moments["m10"] / moments["m00"])
+        cy = int(moments["m01"] / moments["m00"])
+
+        if(draw):
+            cv2.circle(inv_bin, (cx, cy), 5, 0, -1)
+
+        return cx, cy
+    else:
+        return -1, -1
