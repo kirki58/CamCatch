@@ -2,6 +2,9 @@ import camera as cam
 import img
 import gui
 import cv2
+import calibration as calib
+import numpy as np
+from config import base_path
 
 gui = gui.GUI()
 
@@ -11,7 +14,7 @@ with cam.Camera() as camera:
             raise Exception("Failed to capture frame")
 
         gray = img.from_bgr_to_gray(frame)
-        inv = img.from_gray_to_inverted_binary(gray, threshold=gui.thresholdValue)
+        inv = img.from_gray_to_isnverted_binary(gray, threshold=gui.thresholdValue)
 
         # Apply Contour Filtering
         if(gui.applyContourFiltering):
