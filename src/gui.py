@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 from PIL import Image, ImageTk
 
 class GUI:
@@ -24,21 +25,21 @@ class GUI:
         self.centerOfMassLabel.grid(row = 0, column = 2, padx=20, pady=20)
 
         self.drawCenterOfMass = False
-        self.centerOfMassCheckButtonLabel = tk.Checkbutton(self.root, text="Draw Center of Mass", command=self.on_draw_check_change)
+        self.centerOfMassCheckButtonLabel = tk.Checkbutton(self.root, text="Draw Center of Mass", command= lambda: self.on_checkbox_change("drawCenterOfMass"))
         self.centerOfMassCheckButtonLabel.grid(row = 1, column = 2, padx=10, pady=35)
 
         self.thresholdValue = 45
 
-        self.thresholdSelector = tk.Scale(self.root, from_=0, to=255, orient=tk.HORIZONTAL, label="Threshold", command=self.on_threshold_change, length=255, resolution=1)
+        self.thresholdSelector = tk.Scale(self.root, from_=0, to=255, orient=tk.HORIZONTAL, label="Threshold", command= lambda value : self.on_scale_change(value, "thresholdValue") , length=255, resolution=1)
         self.thresholdSelector.set(self.thresholdValue)
         self.thresholdSelector.grid(row = 1, column = 0, padx=10, pady=35, columnspan=2)
 
         self.iterationsValue = 0
-        self.iterationsSelector = tk.Scale(self.root, from_=0, to=10, orient=tk.HORIZONTAL, label="Iterations", length=255, resolution=1, command=self.on_iterations_change)
+        self.iterationsSelector = tk.Scale(self.root, from_=0, to=10, orient=tk.HORIZONTAL, label="Iterations", length=255, resolution=1, command= lambda value : self.on_scale_change(value, "iterationsValue"))
         self.iterationsSelector.set(self.iterationsValue)
 
         self.kernelSizeValue = 2
-        self.kernelSizeSelector = tk.Scale(self.root, from_=2, to=15, orient=tk.HORIZONTAL, label="Kernel Size", length=255, resolution=1, command=self.on_kernel_size_change)
+        self.kernelSizeSelector = tk.Scale(self.root, from_=2, to=15, orient=tk.HORIZONTAL, label="Kernel Size", length=255, resolution=1, command = lambda value : self.on_scale_change(value, "kernelSizeValue"))
         self.kernelSizeSelector.set(self.kernelSizeValue)
 
         self.iterationsSelector.grid(row = 2, column = 0, padx=10, pady=35)
@@ -49,43 +50,35 @@ class GUI:
         self.combobox.grid(row = 2, column = 2, padx=10, pady=35)
 
         self.minAreaValue = 100
-        self.minAreaInput = tk.Entry(self.root, validate="key", validatecommand = (self.root.register(self.on_min_area_change), '%P'))
+        self.minAreaInput = tk.Entry(self.root, validate="key", validatecommand = (self.root.register(lambda value : self.validate_entry(value, "minAreaValue")), '%P'))
         self.minAreaInput.insert(0, self.minAreaValue)
         self.minAreaInput.grid(row = 3, column = 1, padx=10, pady=35)
 
         self.applyContourFiltering = False
-        self.contourCheckButtonLabel = tk.Checkbutton(self.root, text="Apply Contour Filtering", command=self.on_contour_check_change)
+        self.contourCheckButtonLabel = tk.Checkbutton(self.root, text="Apply Contour Filtering", command=lambda: self.on_checkbox_change("applyContourFiltering"))
         self.contourCheckButtonLabel.grid(row = 3, column = 2, padx=10, pady=35)
+    
 
-    def on_draw_check_change(self):
-        self.drawCenterOfMass = not self.drawCenterOfMass
+    def on_checkbox_change(self, attribute_name):
+        current_value = getattr(self, attribute_name)
+        setattr(self, attribute_name, not current_value)
+    
+    def on_scale_change(self, value, attribute_name):
+        dtype = type(getattr(self, attribute_name))
+        setattr(self, attribute_name, dtype(value))
 
-    def on_contour_check_change(self):
-        self.applyContourFiltering = not self.applyContourFiltering
-
-    def on_min_area_change(self, value):
+    def validate_entry(self, value, attribute_name):
+        dtype = type(getattr(self, attribute_name))
         try:
-            self.minAreaValue = int(value)
+            setattr(self, attribute_name, dtype(value))
             return True
         except ValueError:
             return False
-
-    def on_check_change(self):
-        self.onlyErosion = not self.onlyErosion
 
     def on_close(self):
         self.running = False
         self.root.quit()
         self.root.destroy()
-
-    def on_kernel_size_change(self, value):
-        self.kernelSizeValue = int(value)
-
-    def on_iterations_change(self, value):
-        self.iterationsValue = int(value)
-    
-    def on_threshold_change(self, value):
-        self.thresholdValue = int(value)
         
     def put_gray(self, gray):
         grayImage = Image.fromarray(gray)
