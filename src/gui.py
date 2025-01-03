@@ -21,8 +21,17 @@ class GUI:
         self.invLabel = tk.Label(self.root)
         self.invLabel.grid(row = 0, column = 1)
 
-        self.centerOfMassLabel = tk.Label(self.root, text="Center of Mass: ", font=("Helvetica", 16))
-        self.centerOfMassLabel.grid(row = 0, column = 2, padx=20, pady=20)
+        self.infoFrame = tk.Frame(self.root)
+        self.infoFrame.grid(row = 0, column = 2)
+
+        self.centerOfMassLabel = tk.Label(self.infoFrame, text="Center of Mass: ", font=("Helvetica", 16))
+        self.centerOfMassLabel.grid(row = 0, column = 0, padx=10, pady=35)
+
+        self.realPositionLabel = tk.Label(self.infoFrame, text="Real Position of COM: ", font=("Helvetica", 16))
+        self.realPositionLabel.grid(row = 1, column = 0, padx=10, pady=35)
+
+        self.calculatedAnglesLabel = tk.Label(self.infoFrame, text="Calculated Angles: ", font=("Helvetica", 16))
+        self.calculatedAnglesLabel.grid(row = 2, column = 0, padx=10, pady=35)
 
         self.drawCenterOfMass = False
         self.centerOfMassCheckButtonLabel = tk.Checkbutton(self.root, text="Draw Center of Mass", command= lambda: self.on_checkbox_change("drawCenterOfMass"))
@@ -57,8 +66,20 @@ class GUI:
         self.applyContourFiltering = False
         self.contourCheckButtonLabel = tk.Checkbutton(self.root, text="Apply Contour Filtering", command=lambda: self.on_checkbox_change("applyContourFiltering"))
         self.contourCheckButtonLabel.grid(row = 3, column = 2, padx=10, pady=35)
-    
 
+        self.isStarted = False
+        self.startStopButton = tk.Button(self.root, text="Start", command=self.on_start_stop)
+        self.startStopButton.grid(row = 3, column = 0, padx=10, pady=35)
+
+    
+    def on_start_stop(self):
+        if self.isStarted:
+            self.isStarted = False
+            self.startStopButton.config(text="Start")
+        else:
+            self.isStarted = True
+            self.startStopButton.config(text="Stop")
+    
     def on_checkbox_change(self, attribute_name):
         current_value = getattr(self, attribute_name)
         setattr(self, attribute_name, not current_value)

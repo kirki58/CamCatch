@@ -57,7 +57,9 @@ def center_of_mass(inv_bin, draw=False):
         cy = int(moments["m01"] / moments["m00"])
 
         if(draw):
-            cv2.circle(inv_bin, (cx, cy), 5, 0, -1)
+            # Draw a crosshair at the center of mass
+            cv2.line(inv_bin, (cx - 10, cy), (cx + 10, cy), 255, 2)
+            cv2.line(inv_bin, (cx, cy - 10), (cx, cy + 10), 255, 2)
 
         return cx, cy
     else:
