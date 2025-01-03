@@ -1,7 +1,7 @@
 import cv2
-
+from config import cam_width, cam_height
 class Camera:
-    def __init__(self, camera_id=0, width=640, height=480):
+    def __init__(self, camera_id=0, width=cam_width, height=cam_height):
         self.camera = cv2.VideoCapture(camera_id)
         if not self.camera.isOpened():
             raise Exception("Failed to open the camera.")

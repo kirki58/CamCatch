@@ -2,7 +2,6 @@ import camera as cam
 import img
 import gui
 import cv2
-import calibration as calib
 import numpy as np
 from config import base_path
 
