@@ -58,8 +58,8 @@ def center_of_mass(inv_bin, draw=False):
 
         if(draw):
             # Draw a crosshair at the center of mass
-            cv2.line(inv_bin, (cx - 10, cy), (cx + 10, cy), 255, 2)
-            cv2.line(inv_bin, (cx, cy - 10), (cx, cy + 10), 255, 2)
+            cv2.line(inv_bin, (cx - 10, cy), (cx + 10, cy), 0, 2)
+            cv2.line(inv_bin, (cx, cy - 10), (cx, cy + 10), 0, 2)
 
         return cx, cy
     else:
